@@ -21,9 +21,17 @@ services:
       - POSTGRES_PASSWORD=root
     ports:
       - '5435:5435'
-    # volumes: 
-    #   - ./db:/var/lib/postgresql/data
-    #   - ./create-db.sql:/docker-entrypoint-initdb.d/create_database.sql
-    # networks:
-    #   - backnet
+
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    restart: always
+    container_name: keycloak
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_FRONTEND_URL=http://keycloak:8080
+    ports:
+      - '8080:8080'
+    command: start-dev
+
 

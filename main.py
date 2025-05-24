@@ -1,21 +1,38 @@
 from fastapi import FastAPI
 import uvicorn
 from db.connection import DeclarativeBase,engine
-from routes import tasks,health
-from db.connection import get_db
+from routes import tasks,health,auth
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
-app = FastAPI()
+
+
+app = FastAPI(title="Task Management System")
 PORT:int = 3216
 
 
-# 
-# DeclarativeBase.metadata.drop_all(engine)
-DeclarativeBase.metadata.create_all(engine)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+   
+)
+
+ 
+
+try:
+    # DeclarativeBase.metadata.drop_all(engine)
+    DeclarativeBase.metadata.create_all(engine)
+except Exception as e:
+    print("Error creating database metadata")
+    print(e)    
 
 app.include_router(router=tasks.router)
 app.include_router(router=health.router)
+app.include_router(router=auth.router)
 
 
 

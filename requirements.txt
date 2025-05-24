@@ -2,4 +2,7 @@ fastapi
 sqlalchemy
 uvicorn
 psycopg2-binary
+cryptography
+PyJWT 
+requests
 # psycopg2
