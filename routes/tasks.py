@@ -1,17 +1,24 @@
 from fastapi import APIRouter, Depends, status,HTTPException,Query
 from sqlalchemy import desc
 from sqlalchemy.orm import Session 
+from auth.auth_config import validate_current_user
 from db.connection import get_db
 from db.schema import Tasks
+from models.auth_models import AuthenticatedUser
 from models.tasks_models import CreateTask, PaginatedTasksResponse, UpdateTask
 from uuid import UUID
 from typing import Optional
 from datetime import datetime,timezone
 
 
+
 router = APIRouter(prefix="/tasks",tags=["Tasks"])
 
-@router.get("/get")
+""" User id based task creation is not done here as creating user was not part of this assignment and only one task table was in picture.
+    But it can be easily achived, by adding a new Table with foreign key relation with userID and the tasks UUID.    
+"""
+
+@router.get("/get",)
 async def all_task(
     last_task_id: Optional[UUID]= Query(
         None,
@@ -20,7 +27,7 @@ async def all_task(
         None,
         description="Timestamp of the next_task_at from the previous page in (UTC)"
     ), 
-    db:Session =Depends(get_db), ):
+    db:Session =Depends(get_db), user: AuthenticatedUser = Depends(validate_current_user)):
     LIMIT:int = 10
 
     query = db.query(Tasks)
@@ -57,7 +64,7 @@ async def all_task(
 
 
 @router.post("/create")
-async def create_tasks(task:CreateTask, db:Session= Depends(get_db)):
+async def create_tasks(task:CreateTask, db:Session= Depends(get_db),user: AuthenticatedUser = Depends(validate_current_user)):
     try:
         new_task:Tasks = Tasks(title=task.title, description= task.description,status=task.status,created_at = datetime.now(timezone.utc) )    
         db.add(new_task)
@@ -70,7 +77,7 @@ async def create_tasks(task:CreateTask, db:Session= Depends(get_db)):
 
 
 @router.put("/update")
-async def update_tasks(task:UpdateTask, db:Session= Depends(get_db)):   
+async def update_tasks(task:UpdateTask, db:Session= Depends(get_db),user: AuthenticatedUser = Depends(validate_current_user)):   
     
     try:
         update_task =  db.query(Tasks).filter(Tasks.id == task.id).first()    
@@ -93,7 +100,7 @@ async def update_tasks(task:UpdateTask, db:Session= Depends(get_db)):
 
 
 @router.delete("/delete/{id}",status_code=status.HTTP_204_NO_CONTENT)
-async def delete_task(id:UUID,db:Session=Depends(get_db)):
+async def delete_task(id:UUID,db:Session=Depends(get_db),user: AuthenticatedUser = Depends(validate_current_user)):
       
     try:
         delete_task =  db.query(Tasks).filter(Tasks.id == id).first()

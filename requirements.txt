@@ -5,4 +5,7 @@ psycopg2-binary
 cryptography
 PyJWT 
 requests
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation
+opentelemetry-instrumentation-fastapi
 # psycopg2

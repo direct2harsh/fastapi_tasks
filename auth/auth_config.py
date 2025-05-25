@@ -1,9 +1,7 @@
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends,HTTPException,status
 import jwt
-import requests
-import time
-import json
+from services.logging_service import logger
 
 from models.auth_models import AuthenticatedUser
 
@@ -110,6 +108,7 @@ async def validate_admin_user(token: str = Depends(oauth2_scheme)) -> Authentica
     Validates the JWT token and extracts user information.
     """
     try:
+        logger.critical("Admin action invoked")
         # Get the signing key from JWKS
         jwks = jwt.PyJWKClient(KEYCLOAK_JWKS_URL,cache_keys=True)
         signing_key =jwks.get_signing_key_from_jwt(token)

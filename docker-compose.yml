@@ -9,6 +9,9 @@ services:
       - ./:/app
     depends_on:
       - db
+    environment:
+      DBUSER: ${DB_USERNAME}
+      DBPASSWORD: ${DB_PASSWORD}
 
 
 
@@ -33,5 +36,10 @@ services:
     ports:
       - '8080:8080'
     command: start-dev
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    ports:
+      - "4317:4317" 
 
 

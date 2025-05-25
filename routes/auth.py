@@ -1,11 +1,12 @@
 # Creating this route to handle the creation on JWT token from docker.
 # If using postman with localhost the jwt issuer will cause validation error.
 
-from fastapi import APIRouter,Request
+from fastapi import APIRouter,HTTPException
 from auth.auth_config import KEYCLOAK_TOKEN_URL
 import requests
 from models.auth_models import LoginModel
 import json
+from services.logging_service import logger
 
 router = APIRouter(prefix= "/auth",tags=["Authorizations"])
 
@@ -24,5 +25,13 @@ async def getToken(creds:LoginModel):
     'Content-Type': 'application/x-www-form-urlencoded'
     }
     response = requests.request("POST", KEYCLOAK_TOKEN_URL, headers=headers, data=payload)
+
+    resData = json.loads(response.content)
     
-    return json.loads(response.content)  
+    if "access_token" not in resData:
+  
+        logger.critical("Check credentials " + "Username -" + creds.username)
+        raise HTTPException(status_code= 401,detail="Check credentials")
+        
+    
+    return resData

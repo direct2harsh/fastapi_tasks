@@ -15,3 +15,4 @@ class Tasks(DeclarativeBase):
     status = Column(String)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc),index=True)
     updated_at = Column(DateTime(timezone=True),)
+    # email = Column(String,unique=True)    # For alembic test

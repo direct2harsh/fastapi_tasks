@@ -1,10 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import os
 
-# TODO move the creds to the env file
+USER = os.environ.get('DBUSER')
+print(USER)
+PASSWORD = os.environ.get('DBPASSWORD')
+print(PASSWORD)
+
 # tasks is the database name
-POSTGRES_URL = "postgresql+psycopg2://root:root@postgres_db/jasper"
+POSTGRES_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@postgres_db/jasper"
+print(POSTGRES_URL)
 
 engine = create_engine(POSTGRES_URL,echo=True,pool_size=20,max_overflow=10)
 
